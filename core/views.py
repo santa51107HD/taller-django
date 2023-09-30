@@ -7,7 +7,8 @@ from .models import Multas, Prestamos
 from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.db.models import Sum
-import datetime
+from datetime import datetime
+# import datetime
 # Create your views here.
 
 # todos los prestamos que su fecha de pago es menor o igual a hoy y no esten pagados
@@ -114,14 +115,20 @@ def generate_report_items(request):
 def generate_report_fines(request):
     fecha_inicio = request.data['fecha_inicio']
     fecha_fin = request.data['fecha_fin']
+    fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
+    fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
 
     if fecha_inicio and fecha_fin:
-        multas_por_dia = Multas.objects.filter(prestamo__fecha_prestamo__date__range=(fecha_inicio, fecha_fin)).annotate(
-            dia_multa=TruncDate('fecha_pago')).values('dia_multa').annotate(total_multas=Sum('valor'))
-
-        fechas = [registro['dia_multa'] for registro in multas_por_dia]
+        multas_por_dia = Multas.objects.annotate(dia_multa=TruncDate(
+            'fecha_pago')).values('dia_multa').annotate(total_multas=Sum('valor'))
+        dias_solicitados = []
+        for multa in multas_por_dia:
+            dia_multa = multa['dia_multa']
+            if fecha_inicio <= dia_multa <= fecha_fin:
+                dias_solicitados.append(multa)
         valores_multas = [registro['total_multas']
-                          for registro in multas_por_dia]
+                          for registro in dias_solicitados]
+        fechas = [registro['dia_multa'] for registro in dias_solicitados]
         resultado = {
             'actividad': fechas,
             'cantidades': valores_multas,

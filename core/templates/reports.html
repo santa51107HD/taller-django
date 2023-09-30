@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Univalle Sports</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: sans-serif;
+      }
+
+      body {
+        width: 100%;
+        min-height: 100vh;
+        background: #b0d5d2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      h1 {
+        margin: 20px;
+        color: rgb(44, 43, 43);
+      }
+
+      .container__cards {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .card {
+        width: 400px;
+        height: auto;
+        background: #e6e9ed;
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.397);
+        transition: height 0.5s ease;
+      }
+
+      h3 {
+        text-align: center;
+        color: rgb(61, 60, 60);
+        margin-bottom: 10px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      button {
+        height: 30px;
+        margin: 5px;
+        padding: 5px;
+      }
+
+      .disabled {
+        display: none;
+      }
+
+      .enabled {
+        width: 380px;
+        height: 200px;
+        transition: opacity 0.5s ease 2s;
+      }
+    </style>
+  </head>
+  <body>
+    <body>
+      <h1>REPORTES</h1>
+      <div class="container__cards">
+        <div class="card">
+          <h3>
+            Reporte de la cantidad de artículos deportivos prestados por cada
+            deporte
+          </h3>
+          <form id="my_form">
+            <div class="dateOne">
+              <label for="fecha_inicio">Fecha inicio:</label>
+              <input
+                type="date"
+                id="fecha_inicio1"
+                name="fecha_inicio1"
+                required
+              />
+            </div>
+            <div class="dateTwo">
+              <label for="fecha_fin">Fecha Final:</label>
+              <input type="date" id="fecha_fin1" name="fecha_fin1" required />
+            </div>
+
+            <button type="submit">Generar gráfico</button>
+          </form>
+
+          <div class="graph">
+            <canvas id="myChart" class="disabled"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>
+            Reporte de la cantidad de artículos deportivos prestados por cada
+            día
+          </h3>
+          <form id="my_form2">
+            <div class="dateOne">
+              <label for="fecha_inicio">Fecha inicio:</label>
+              <input
+                type="date"
+                id="fecha_inicio2"
+                name="fecha_inicio2"
+                required
+              />
+            </div>
+            <div class="dateTwo">
+              <label for="fecha_fin">Fecha Final:</label>
+              <input type="date" id="fecha_fin2" name="fecha_fin2" required />
+            </div>
+
+            <button type="submit">Generar gráfico</button>
+          </form>
+
+          <div class="graph">
+            <canvas id="myChart2" class="disabled"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Reporte de el valor de las multas generadas por día</h3>
+          <form id="my_form3">
+            <div class="dateOne">
+              <label for="fecha_inicio">Fecha inicio:</label>
+              <input
+                type="date"
+                id="fecha_inicio3"
+                name="fecha_inicio3"
+                required
+              />
+            </div>
+            <div class="dateTwo">
+              <label for="fecha_fin">Fecha Final:</label>
+              <input type="date" id="fecha_fin3" name="fecha_fin3" required />
+            </div>
+
+            <button type="submit">Generar gráfico</button>
+          </form>
+
+          <div class="graph">
+            <canvas id="myChart3" class="disabled"></canvas>
+          </div>
+        </div>
+      </div>
+    </body>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const formulario = document.getElementById("my_form");
+      const formulario2 = document.getElementById("my_form2");
+      const formulario3 = document.getElementById("my_form3");
+      var ctx = document.getElementById("myChart").getContext("2d");
+      var miGrafico1 = null;
+      var miGrafico2 = null;
+      var miGrafico3 = null;
+      var ctx2 = document.getElementById("myChart2").getContext("2d");
+      var ctx3 = document.getElementById("myChart3").getContext("2d");
+      formulario.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(formulario);
+
+        document.getElementById("myChart").classList.remove("disabled");
+        document.getElementById("myChart").classList.add("enabled");
+
+        const fecha_inicio = formData.get("fecha_inicio1");
+        const fecha_fin = formData.get("fecha_fin1");
+        // console.log(fecha_inicio, fecha_fin);
+        peticion(
+          "generate_reports_sports",
+          fecha_inicio,
+          fecha_fin,
+          graphSports
+        );
+      });
+
+      function peticion(url, fecha_inicio, fecha_fin, f) {
+        fetch(`http://localhost:8000/${url}/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            fecha_inicio: fecha_inicio,
+            fecha_fin: fecha_fin,
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            // console.log(res);
+            f(res, fecha_inicio, fecha_fin);
+          });
+
+        //   fetch(
+        //   `http://localhost:8000/${url}?fecha_inicio=${fecha_inicio}&fecha_fin=${fecha_fin}`
+        // )
+      }
+
+      function graphSports(data, f1, f2) {
+        if (miGrafico1) {
+          miGrafico1.destroy();
+        }
+        miGrafico1 = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: data.actividad,
+            datasets: [
+              {
+                // label: `Cantidad de Artículos Deportivos Prestados por Cada Deporte entre ${f1} y ${f2}`,
+                label: "Artículos deportivos",
+                data: data.cantidades,
+                backgroundColor: "rgba(75, 192, 192)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+      formulario2.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(formulario2);
+
+        document.getElementById("myChart2").classList.remove("disabled");
+        document.getElementById("myChart2").classList.add("enabled");
+
+        const fecha_inicio = formData.get("fecha_inicio2");
+        const fecha_fin = formData.get("fecha_fin2");
+        // console.log(fecha_inicio, fecha_fin);
+        peticion("generate_reports_items", fecha_inicio, fecha_fin, graphItems);
+      });
+      function graphItems(data, f1, f2) {
+        if (miGrafico2) {
+          miGrafico2.destroy();
+        }
+        miGrafico2 = new Chart(ctx2, {
+          type: "bar",
+          data: {
+            labels: data.actividad,
+            datasets: [
+              {
+                // label: `Cantidad de Artículos Deportivos Prestados por Cada Día entre ${f1} y ${f2}`,
+                label: "Día",
+                data: data.cantidades,
+                backgroundColor: "rgba(75, 192, 192)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+      formulario3.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(formulario3);
+
+        document.getElementById("myChart3").classList.remove("disabled");
+        document.getElementById("myChart3").classList.add("enabled");
+
+        const fecha_inicio = formData.get("fecha_inicio3");
+        const fecha_fin = formData.get("fecha_fin3");
+        // console.log(fecha_inicio, fecha_fin);
+        peticion("generate_reports_fines", fecha_inicio, fecha_fin, graphFines);
+      });
+      function graphFines(data, f1, f2) {
+        if (miGrafico3) {
+          miGrafico3.destroy();
+        }
+        miGrafico3 = new Chart(ctx3, {
+          type: "bar",
+          data: {
+            labels: data.actividad,
+            datasets: [
+              {
+                // label: `Multas Generadas por Día entre ${f1} y ${f2}`,
+                label: "Valor total multas",
+                data: data.cantidades,
+                backgroundColor: "rgba(75, 192, 192)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      }
+    </script>
+  </body>
+</html>

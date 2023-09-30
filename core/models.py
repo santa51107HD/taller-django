@@ -45,6 +45,7 @@ class Prestamos(models.Model):
     articuloDeportivo = models.ForeignKey(ArticuloDeportivo, on_delete=models.CASCADE)
     fecha_prestamo = models.DateTimeField(auto_now_add=True)
     fecha_vencimiento_prestamos = models.DateTimeField()
+    pagado = models.BooleanField(default=False)
 
 class Multas(models.Model):
     univalluno = models.ForeignKey(Univalluno, on_delete=models.CASCADE)
@@ -52,4 +53,4 @@ class Multas(models.Model):
     prestamo = models.ForeignKey(Prestamos, on_delete=models.CASCADE)
     valor = models.IntegerField()
     pagado = models.BooleanField(default=False)
-    fecha_pago = models.DateTimeField(auto_now_add=True)
+    fecha_pago = models.DateTimeField(auto_now_add=True, null=True)

@@ -83,8 +83,8 @@ Esta url genera un informe de la cantidad de artículos deportivos prestados por
 Ejemplo de JSON
 
 {
-fecha_inicial: 2023-09-29,
-fecha_fin: 2023-10-01
+  "fecha_inicial": 2023-09-29,
+  "fecha_fin": 2023-10-01
 }
 ```
 ```
@@ -97,8 +97,8 @@ Esta url genera un informe de la cantidad de artículos deportivos prestados por
 Ejemplo de JSON
 
 {
-fecha_inicial: 2023-09-29,
-fecha_fin: 2023-10-01
+  "fecha_inicial": 2023-09-29,
+  "fecha_fin": 2023-10-01
 }
 ```
 ```
@@ -111,8 +111,8 @@ Esta url genera un informe del valor total de las multas generadas por día
 Ejemplo de JSON
 
 {
-fecha_inicial: 2023-09-29,
-fecha_fin: 2023-10-01
+  "fecha_inicial": 2023-09-29,
+  "fecha_fin": 2023-10-01
 }
 ```
 ```

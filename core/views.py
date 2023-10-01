@@ -81,12 +81,15 @@ def pagarMulta(request):
         return Response({"error": False, "mensaje": "La multa ya esta pagada"}, status=status.HTTP_200_OK)
 
 
+# Función para generar un informe de la cantidad de artículos deportivos prestados por deporte
 @api_view(['POST'])
 def generate_report_sports(request):
+    # Obtiene las fechas de inicio y fin de la solicitud
     fecha_inicio = request.data['fecha_inicio']
     fecha_fin = request.data['fecha_fin']
 
     if fecha_inicio and fecha_fin:
+        # Filtra los registros de préstamos de artículos deportivos dentro del rango de fechas especificado
         prestamos_por_deporte = Prestamos.objects.filter(fecha_prestamo__date__range=(fecha_inicio, fecha_fin)).values(
             'articuloDeportivo__deporte').annotate(cantidad=Count('articuloDeportivo'))
         deportes = [registro['articuloDeportivo__deporte']
@@ -97,46 +100,54 @@ def generate_report_sports(request):
             'actividad': deportes,
             'cantidades': cantidades,
         }
-        return Response(resultado)
+        return JsonResponse(resultado)
 
-    return Response("Por favor, proporciona las fechas de inicio y fin.")
+    return JsonResponse("Por favor, proporciona las fechas de inicio y fin.", status=400)
 
-
+# Función para generar un informe de la cantidad de artículos deportivos prestados por día
 @api_view(['POST'])
 def generate_report_items(request):
+    # Obtiene las fechas de inicio y fin de la solicitud
     fecha_inicio = request.data['fecha_inicio']
     fecha_fin = request.data['fecha_fin']
-    print("ITEMS")
+
     if fecha_inicio and fecha_fin:
+        # Filtra los registros de préstamos de artículos deportivos dentro del rango de fechas especificado
         prestamos_por_dia = Prestamos.objects.filter(fecha_prestamo__date__range=(fecha_inicio, fecha_fin)).annotate(
             dia_prestamo=TruncDate('fecha_prestamo')).values('dia_prestamo').annotate(cantidad=Count('id'))
-
         fechas = [registro['dia_prestamo'] for registro in prestamos_por_dia]
         cantidades = [registro['cantidad'] for registro in prestamos_por_dia]
         resultado = {
             'actividad': fechas,
             'cantidades': cantidades,
         }
-        return Response(resultado)
+        return JsonResponse(resultado)
 
-    return Response("Por favor, proporciona las fechas de inicio y fin.")
+    return JsonResponse("Por favor, proporciona las fechas de inicio y fin.", status=400)
 
-
+# Función para generar un informe del valor total de las multas generadas por día
 @api_view(['POST'])
 def generate_report_fines(request):
+    # Obtiene las fechas de inicio y fin de la solicitud
     fecha_inicio = request.data['fecha_inicio']
     fecha_fin = request.data['fecha_fin']
+    
+    # Convierte las fechas de inicio y fin en objetos de fecha
     fecha_inicio = datetime.strptime(fecha_inicio, '%Y-%m-%d').date()
     fecha_fin = datetime.strptime(fecha_fin, '%Y-%m-%d').date()
 
     if fecha_inicio and fecha_fin:
+        # Filtra los registros de multas dentro del rango de fechas especificado
         multas_por_dia = Multas.objects.annotate(dia_multa=TruncDate(
             'fecha_creacion')).values('dia_multa').annotate(total_multas=Sum('valor'))
+        
+        # Filtra las multas dentro del rango de fechas especificado
         dias_solicitados = []
         for multa in multas_por_dia:
             dia_multa = multa['dia_multa']
             if fecha_inicio <= dia_multa <= fecha_fin:
                 dias_solicitados.append(multa)
+
         valores_multas = [registro['total_multas']
                           for registro in dias_solicitados]
         fechas = [registro['dia_multa'] for registro in dias_solicitados]
@@ -144,10 +155,10 @@ def generate_report_fines(request):
             'actividad': fechas,
             'cantidades': valores_multas,
         }
-        return Response(resultado)
+        return JsonResponse(resultado)
 
-    return Response("Por favor, proporciona las fechas de inicio y fin.")
+    return JsonResponse("Por favor, proporciona las fechas de inicio y fin.", status=400)
 
-
+# Función para renderizar la interfaz de usuario de informes
 def reports(request):
     return render(request, 'reports.html')

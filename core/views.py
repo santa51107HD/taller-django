@@ -11,8 +11,10 @@ from datetime import datetime
 # import datetime
 # Create your views here.
 
-# todos los prestamos que su fecha de pago es menor o igual a hoy y no esten pagados
 
+"""
+Metodo que genera las multas cuando la fecha de vencimiento del prestamo es menor o igual a el dia actual y no se ha pagado
+"""
 
 @api_view(['GET'])
 def generarMulta(request):
@@ -46,20 +48,23 @@ def generarMulta(request):
     else:
         return Response({"error": False, "mensaje": "No se generaron multas"}, status=status.HTTP_200_OK)
 
-# metodo para pagar una multa
-
+"""
+Metodo que paga la multa ingresada y verifica si todas las multas fueron pagadas para liberar los articulos, el univalluno
+y pagar el prestamo.
+"""
 
 @api_view(['POST'])
 def pagarMulta(request):
 
     multa_pagada = Multas.objects.get(pk=request.data["id_multa"])
+    # verificamos si la multa no esta pagada
     if multa_pagada.pagado == False:
         multa_pagada.pagado = True
         multa_pagada.fecha_pago = datetime.now()
         multa_pagada.save()
         univalluno = multa_pagada.univalluno
         multas = Multas.objects.filter(univalluno=univalluno)
-        # revisar si el univalluno tiene alguna multa sin pagar
+        # revisar si el univalluno tiene alguna otra multa sin pagar
         for multa in multas:
             if multa.pagado == False:
                 return Response({"error": False, "mensaje": "Se ha pagado la multa"}, status=status.HTTP_200_OK)

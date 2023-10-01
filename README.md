@@ -19,7 +19,6 @@ $ git clone https://github.com/santa51107HD/taller-django.git
 - Instalar los requerimientos con el comando:
 
 $ pip install -r requirements.txt
-
 ```
 Comandos para la ejecución del Programa:
 ```
@@ -39,26 +38,32 @@ Arrancar el servidor local:
 
 $ python manage.py runserver
 
-Para editar y agregar registros a la base de datos se debe tener creado un superuser en Django, se puede crear con el siguiente comando:
+Para editar y agregar registros a la base de datos se debe tener creado un superuser en Django,se puede crear con el siguiente
+comando:
 
 $ python manage.py createsuperuser
-
 ```
 Urls para utilizar el Programa en el navegador:
 ```
 http://127.0.0.1:8000/admin
 
+En esta url se puede visualizar, editar y agregar nuevos registros de los modelos del programa.
+```
+```
 http://127.0.0.1:8000/multa
 
 Get
 
-En esta url podemos generar las multas de todos los univallunos que tienen prestamos pendientes con una fecha de vencimiento del prestamo menor o igual a el dia actual y que el prestamo no ha sido pagado.
-
+En esta url podemos generar las multas de todos los univallunos que tienen prestamos pendientes con una fecha de vencimiento
+del prestamo menor o igual a el dia actual y que el prestamo no ha sido pagado.
+```
+```
 http://127.0.0.1:8000/multa/pagar/
 
 Post
 
-En esta url podemos pagar la multa mediante un json con su id, ademas se verifica si todas las multas del univalluno han sido pagadas para liberar al univalluno, el articulo deportivos y pagar el prestamo.
+En esta url podemos pagar la multa mediante un json con su id, ademas se verifica si todas las multas del univalluno han sido
+pagadas para liberar al univalluno, el articulo deportivos y pagar el prestamo.
 
 ejemplo json
 
@@ -67,7 +72,11 @@ ejemplo json
 "id_multa" : 1
 
 }
-
+```
+```
 http://127.0.0.1:8000/reports
+
+En esta url podemos generar reportes de cantidad artículos deportivos prestados por cada deporte, cantidad de artículos deportivos
+prestados por cada día y sobre el valor de las multas generadas por día.
 ```
 

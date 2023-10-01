@@ -50,7 +50,23 @@ http://127.0.0.1:8000/admin
 
 http://127.0.0.1:8000/multa
 
+Get
+
+En esta url podemos generar las multas de todos los univallunos que tienen prestamos pendientes con una fecha de vencimiento del prestamo menor o igual a el dia actual y que el prestamo no ha sido pagado.
+
 http://127.0.0.1:8000/multa/pagar/
+
+Post
+
+En esta url podemos pagar la multa mediante un json con su id, ademas se verifica si todas las multas del univalluno han sido pagadas para liberar al univalluno, el articulo deportivos y pagar el prestamo.
+
+ejemplo json
+
+{
+
+"id_multa" : 1
+
+}
 
 http://127.0.0.1:8000/reports
 ```

@@ -7,7 +7,7 @@ from .models import Multas, Prestamos
 from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.db.models import Sum
-from datetime import datetime
+from datetime import datetime  
 # import datetime
 # Create your views here.
 
@@ -18,7 +18,7 @@ from datetime import datetime
 def generarMulta(request):
 
     prestamos_vencidos = Prestamos.objects.filter(
-        fecha_vencimiento_prestamos__lte=datetime.date.today()).filter(pagado=False)
+        fecha_vencimiento_prestamos__lte=datetime.now()).filter(pagado=False)
 
     # si tenemos algun prestamo vencido se le genera una multa al univalluno
     if prestamos_vencidos:
@@ -27,12 +27,19 @@ def generarMulta(request):
 
             univalluno = prestamo.univalluno
             articulo = prestamo.articuloDeportivo
-            valor = round(articulo.valor*0, 15)
+            valor = round(articulo.valor*0.15)
+            print(valor)
             pagado = False
+            
             fecha_pago = None
-
-            multa = Multas(univalluno, articulo, prestamo,
-                           valor, pagado, fecha_pago)
+            id = len(Multas.objects.all()) + 1
+            print(id)
+            univalluno.disponible = False
+            univalluno.save()
+            articulo.disponible = False
+            articulo.save()
+            multa = Multas(id, univalluno.id, articulo.id, prestamo.id,
+                           valor,pagado, fecha_pago)
             multa.save()
 
         return Response({"error": False, "mensaje": "Se han generado las multas"}, status=status.HTTP_200_OK)
@@ -48,7 +55,7 @@ def pagarMulta(request):
     multa_pagada = Multas.objects.get(pk=request.data["id_multa"])
     if multa_pagada.pagado == False:
         multa_pagada.pagado = True
-        multa_pagada.fecha_pago = datetime.date.today()
+        multa_pagada.fecha_pago = datetime.now()
         multa_pagada.save()
         univalluno = multa_pagada.univalluno
         multas = Multas.objects.filter(univalluno=univalluno)
@@ -56,12 +63,11 @@ def pagarMulta(request):
         for multa in multas:
             if multa.pagado == False:
                 return Response({"error": False, "mensaje": "Se ha pagado la multa"}, status=status.HTTP_200_OK)
-        # liberar a los articulos deportivos
-        for multa in multas:
-            multa.articuloDeportivo.disponible = True
-            multa.save()
-
-        # liberar al univalluno que pago sus multas
+        # liberar a los articulos deportivos, al univalluno y paga el prestamo que pago sus multas
+        multa_pagada.prestamo.pagado = True
+        multa_pagada.prestamo.save()
+        multa_pagada.articuloDeportivo.disponible = True
+        multa_pagada.articuloDeportivo.save()
         univalluno.disponible = True
         univalluno.save()
 
@@ -120,7 +126,7 @@ def generate_report_fines(request):
 
     if fecha_inicio and fecha_fin:
         multas_por_dia = Multas.objects.annotate(dia_multa=TruncDate(
-            'fecha_pago')).values('dia_multa').annotate(total_multas=Sum('valor'))
+            'fecha_creacion')).values('dia_multa').annotate(total_multas=Sum('valor'))
         dias_solicitados = []
         for multa in multas_por_dia:
             dia_multa = multa['dia_multa']

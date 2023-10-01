@@ -36,7 +36,7 @@ class ArticuloDeportivo(models.Model):
     nombre = models.CharField(max_length=100)
     deporte = models.CharField(max_length=100)
     descripcion = models.TextField(max_length = 800)
-    valor = models.CharField(max_length=100)
+    valor = models.IntegerField()
     disponible = models.BooleanField(default = False)
 
 class Prestamos(models.Model):
@@ -56,6 +56,7 @@ class Multas(models.Model):
     univalluno = models.ForeignKey(Univalluno, on_delete=models.CASCADE)
     articuloDeportivo = models.ForeignKey(ArticuloDeportivo, on_delete=models.CASCADE)
     prestamo = models.ForeignKey(Prestamos, on_delete=models.CASCADE)
-    valor = models.IntegerField()
-    pagado = models.BooleanField(default=False)
-    fecha_pago = models.DateTimeField(auto_now_add=True, null=True)
+    valor = models.IntegerField(null=True)
+    pagado = models.BooleanField(default=False, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_pago = models.DateTimeField(null=True)

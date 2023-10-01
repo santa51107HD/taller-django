@@ -21,7 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('core/multa', views.generarMulta, name='multa'),
-    path('core/multa/pagar/', views.pagarMulta, name='multa'),
+    path('multa', views.generarMulta, name='multa'),
+    path('multa/pagar/', views.pagarMulta, name='multa'),
     path('', include('core.urls'))
 ]

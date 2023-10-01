@@ -100,9 +100,9 @@ def generate_report_sports(request):
             'actividad': deportes,
             'cantidades': cantidades,
         }
-        return JsonResponse(resultado)
+        return Response(resultado)
 
-    return JsonResponse("Por favor, proporciona las fechas de inicio y fin.", status=400)
+    return Response("Por favor, proporciona las fechas de inicio y fin.", status=400)
 
 # Función para generar un informe de la cantidad de artículos deportivos prestados por día
 @api_view(['POST'])
@@ -121,9 +121,9 @@ def generate_report_items(request):
             'actividad': fechas,
             'cantidades': cantidades,
         }
-        return JsonResponse(resultado)
+        return Response(resultado)
 
-    return JsonResponse("Por favor, proporciona las fechas de inicio y fin.", status=400)
+    return Response("Por favor, proporciona las fechas de inicio y fin.", status=400)
 
 # Función para generar un informe del valor total de las multas generadas por día
 @api_view(['POST'])
@@ -155,9 +155,9 @@ def generate_report_fines(request):
             'actividad': fechas,
             'cantidades': valores_multas,
         }
-        return JsonResponse(resultado)
+        return Response(resultado)
 
-    return JsonResponse("Por favor, proporciona las fechas de inicio y fin.", status=400)
+    return Response("Por favor, proporciona las fechas de inicio y fin.", status=400)
 
 # Función para renderizar la interfaz de usuario de informes
 def reports(request):

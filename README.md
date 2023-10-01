@@ -38,8 +38,8 @@ Arrancar el servidor local:
 
 $ python manage.py runserver
 
-Para editar y agregar registros a la base de datos se debe tener creado un superuser en Django,se puede crear con el siguiente
-comando:
+Para editar y agregar registros a la base de datos se debe tener creado un superuser en Django,se puede crear con el
+siguiente comando:
 
 $ python manage.py createsuperuser
 ```
@@ -76,7 +76,7 @@ ejemplo json
 ```
 http://127.0.0.1:8000/reports
 
-En esta url podemos generar reportes de cantidad artículos deportivos prestados por cada deporte, cantidad de artículos deportivos
-prestados por cada día y sobre el valor de las multas generadas por día.
+En esta url podemos generar reportes de cantidad artículos deportivos prestados por cada deporte, cantidad de artículos
+deportivos prestados por cada día y sobre el valor de las multas generadas por día.
 ```
 

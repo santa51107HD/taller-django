@@ -74,9 +74,50 @@ ejemplo json
 }
 ```
 ```
+http://127.0.0.1:8000/generate_reports_sports/
+
+POST
+
+Esta url genera un informe de la cantidad de artículos deportivos prestados por deporte
+
+Ejemplo de JSON
+
+{
+fecha_inicial: 2023-09-29,
+fecha_fin: 2023-10-01
+}
+```
+```
+http://127.0.0.1:8000/generate_reports_items/
+
+POST
+
+Esta url genera un informe de la cantidad de artículos deportivos prestados por día
+
+Ejemplo de JSON
+
+{
+fecha_inicial: 2023-09-29,
+fecha_fin: 2023-10-01
+}
+```
+```
+http://127.0.0.1:8000/generate_reports_fines/
+
+POST
+
+Esta url genera un informe del valor total de las multas generadas por día
+
+Ejemplo de JSON
+
+{
+fecha_inicial: 2023-09-29,
+fecha_fin: 2023-10-01
+}
+```
+```
 http://127.0.0.1:8000/reports
 
 En esta url podemos generar reportes de cantidad artículos deportivos prestados por cada deporte, cantidad de artículos
 deportivos prestados por cada día y sobre el valor de las multas generadas por día.
 ```
-
